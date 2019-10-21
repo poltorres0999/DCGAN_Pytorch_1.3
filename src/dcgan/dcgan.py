@@ -55,8 +55,9 @@ class DCGAN():
 
         HTML(ani.to_jshtml())
 
+
     # todo: enable choosing different optimizer and loss function (split in two functions)
-    def create_bce_loss_optimizers(self, learning_rate, beta):
+    def set_bce_loss_optimizers(self, learning_rate, beta):
         # Initialize BCELoss function
         self.loss_fn = nn.BCELoss()
         # Setup Adam optimizers for both G and D
@@ -111,6 +112,16 @@ class DCGAN():
         self.gen_optimizer.step()
 
         return gen_error, D_G_z2
+
+    def plot_loss_resutls(self):
+        plt.figure(figsize=(10, 5))
+        plt.title("Generator and Discriminator Loss During Training")
+        plt.plot(self.gen_loss, label="G")
+        plt.plot(self.disc_loss, label="D")
+        plt.xlabel("iterations")
+        plt.ylabel("Loss")
+        plt.legend()
+        plt.show()
 
     # todo: Debug
     # todo: store images as png
