@@ -1,12 +1,13 @@
 from __future__ import print_function
 
 import random
-
+from datetime import datetime
 import torch
 import torch.nn.parallel
 import torch.utils.data
 import torchvision.datasets as dataset_utils
 import torchvision.transforms as transforms
+from matplotlib import pyplot as plt
 
 
 def set_environment(seed_range, n_gpu):
@@ -75,3 +76,69 @@ def load_base_dataset(dataset_name, data_root, transform, batch_size, norm=1, sh
                                               num_workers=data_loader_workers)
 
     return data_loader
+
+
+def load_model(model, optimizer, save_path):
+
+    checkpoint = torch.load(save_path)
+    model.load_state_dict(checkpoint['model_state_dict'])
+    optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+    epoch = checkpoint['epoch']
+    model.eval()
+
+    return model, optimizer, epoch
+
+
+def save_model(model, optimizer, epoch, save_path):
+
+    torch.save({
+        'epoch': epoch,
+        'model_state_dict': model.state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
+    }, save_path)
+
+def plot_loss_resutls(gen_loss, disc_loss):
+    plt.figure(figsize=(10, 5))
+    plt.title("Generator and Discriminator Loss During Training")
+    plt.plot(gen_loss, label="G")
+    plt.plot(disc_loss, label="D")
+    plt.xlabel("iterations")
+    plt.ylabel("Loss")
+    plt.legend()
+    plt.show()
+
+
+def save_loss_plot(gen_loss, disc_loss, path):
+    plt.figure(figsize=(10, 5))
+    plt.title("Generator and Discriminator Loss During Training")
+    plt.plot(gen_loss, label="G")
+    plt.plot(disc_loss, label="D")
+    plt.xlabel("iterations")
+    plt.ylabel("Loss")
+    plt.legend()
+    plt.savefig(f"{path}/gen_disc_loss.png")
+
+
+def create_report(r_path, s_date, gen_net, disc_net, optimizer, loss_fn, dataset_name, lr, epochs, disc_loss, gen_loss):
+    current_date = datetime.now().strftime("%d-%m-%Y_%I-%M-%S_%p")
+    filename = r_path + f"{current_date}.txt"
+
+    with open(filename, 'w') as file:
+        file.write(f"Start date:\t{s_date.strftime('%d-%m-%Y_%I-%M-%S_%p')}\n")
+        file.write(f"End date:\t{current_date}\n")
+        file.write("------------NET CONFIGURATION------------\n")
+        file.write("Generator configuration\n")
+        file.write(f"{gen_net}\n")
+        file.write("Discriminator configuration\n")
+        file.write(f"{disc_net}\n")
+        file.write("------------LOSS FN / OPTIMIZER------------\n")
+        file.write(f"Optimizer\t{optimizer}\n")
+        file.write(f"Loss Function:\t{loss_fn}\n")
+        file.write("------------Dataset------------\n")
+        file.write(f"Data set name:\t{dataset_name}\n")
+        file.write("------------Training------------\n")
+        file.write(f"Learning rate:\t{lr}\n")
+        file.write(f"Epochs:\t{epochs}\n")
+        file.write("------------Results------------\n")
+        file.write(f"Generator loss:\t{gen_loss}\n")
+        file.write(f"Discriminator loss:\t{disc_loss}\n")

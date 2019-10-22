@@ -15,6 +15,8 @@ import torchvision.transforms as transforms
 import torchvision.utils as vutils
 from IPython.display import HTML
 
+from src.dcgan.utils import save_model
+
 DEFAULT_CONFIG_PATH = "../../res/default_config.ini"
 
 
@@ -32,7 +34,7 @@ class DCGAN():
         self.disc_loss = []
         self.generated_images = []
 
-    def plot_images(img_data, num_images, fig_size, device, plt_title=""):
+    def plot_images(self, img_data, num_images, fig_size, device, plt_title=""):
         plt.figure(figsize=(fig_size, fig_size))
         plt.axis("off")
         plt.title(plt_title)
@@ -55,6 +57,12 @@ class DCGAN():
 
         HTML(ani.to_jshtml())
 
+    def set_loss_fn(self, loss_fn):
+        self.loss_fn = loss_fn
+
+    def set_optimizers(self, disc_optimizer, gen_optimizer):
+        self.disc_optimizer = disc_optimizer
+        self.gen_optimizer = gen_optimizer
 
     # todo: enable choosing different optimizer and loss function (split in two functions)
     def set_bce_loss_optimizers(self, learning_rate, beta):
@@ -113,29 +121,22 @@ class DCGAN():
 
         return gen_error, D_G_z2
 
-    def plot_loss_resutls(self):
-        plt.figure(figsize=(10, 5))
-        plt.title("Generator and Discriminator Loss During Training")
-        plt.plot(self.gen_loss, label="G")
-        plt.plot(self.disc_loss, label="D")
-        plt.xlabel("iterations")
-        plt.ylabel("Loss")
-        plt.legend()
-        plt.show()
-
     # todo: Debug
     # todo: store images as png
-    def train(self, num_epochs=1, noise_v_size=100, real_label_v=1, fake_label_v=0, store_frequency=500, debug=False):
+    def train(self, gen_save_path, disc_save_path, num_epochs=1, noise_v_size=100, real_label_v=1, fake_label_v=0, store_frequency=500,
+              debug=False):
         # Training Loop
         # Create batch of latent vectors that we will use to visualize the progression of the generator
         fixed_noise = torch.randn(64, noise_v_size, 1, 1, device=self.device)
         iters = 0
+        current_epoch = 0
         print("Starting Training Loop...")
         # For each epoch
         for epoch in range(num_epochs):
             print(f"Started epoch [{epoch}] / [{num_epochs}]")
             # For each batch in the data_loader
             # Note -> enumerate outputs (int index, item from iterable object)
+            current_epoch = epoch
             for i, train_data in enumerate(self.data_loader):
                 print(f"Iteration [{i}] / [{len(self.data_loader)}]")
                 # ---Prepare data for the current training step---
@@ -173,3 +174,6 @@ class DCGAN():
                     self.generated_images.append(vutils.make_grid(fake_images, padding=2, normalize=True))
 
                 iters += 1
+
+            save_model(self.generator_net, self.gen_optimizer, epoch, gen_save_path)
+            save_model(self.discriminator_net, self.disc_optimizer, epoch, disc_save_path)
