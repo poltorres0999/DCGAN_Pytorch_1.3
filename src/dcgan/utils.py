@@ -18,16 +18,16 @@ def set_environment(seed_range, n_gpu):
     return device
 
 
-def set_transform(img_size, image_depth, norm=0.5):
+def set_transform(img_size, img_depth, norm=0.5):
     transformations = [transforms.Resize(img_size),
                        transforms.CenterCrop(img_size),
                        transforms.ToTensor()]
 
-    if image_depth == 3:
+    if img_depth == 3:
         transformations.append(transforms.Normalize((norm, norm, norm), (norm, norm, norm)))
-    elif image_depth == 2:
+    elif img_depth == 2:
         transformations.append(transforms.Normalize((norm, norm), (norm, norm)))
-    elif image_depth == 1:
+    elif img_depth == 1:
         transformations.append(transforms.Normalize((norm,), (norm,)))
     else:
         raise ValueError("Image depth not supported")

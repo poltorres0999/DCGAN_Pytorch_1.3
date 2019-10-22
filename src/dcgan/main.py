@@ -66,6 +66,7 @@ def main():
     batch_size = int(conf['data']['batch_size'])
     dl_workers = int(conf['data']['dl_workers'])
     data_root = conf['data']['data_root']
+    data_set_path = conf['data']['data_set_path']
     image_size = int(conf['data']['image_size'])
     img_channels = int(conf['data']['img_channels'])
     norm = float(conf['data']['norm'])
@@ -78,19 +79,19 @@ def main():
     noise_vector_size = int(conf['net']['noise_vector_size'])
     g_fm_depth = int(conf['net']['g_fm_depth'])
     d_fm_depth = int(conf['net']['d_fm_depth'])
-    gen_model_path = ['net']['gen_model_path']
-    disc_model_path = ['net']['disc_model_path']
+    gen_model_path = conf['net']['gen_model_path']
+    disc_model_path = conf['net']['disc_model_path']
 
     # Sets the device (GPU or CPU) and creates the data_loader
     device = set_environment((seed_min, seed_max), n_gpu)
     # Set image transformations
-    transform = ""
+    transform = set_transform(img_size=image_size, img_depth=img_channels, norm=norm)
     if base_dataset is not None:
         data_loader = load_base_dataset(data_root=data_root, transform=transform, batch_size=batch_size,
                                         norm=norm, shuffle=shuffle, data_loader_workers=dl_workers,
                                         dataset_name=base_dataset)
     else:
-        data_loader = load_image_data(data_root=data_root, transform=transform, batch_size=batch_size,
+        data_loader = load_image_data(data_root=data_set_path, transform=transform, batch_size=batch_size,
                                       norm=norm, shuffle=shuffle, data_loader_workers=dl_workers)
 
     # Create or load Generator and Discriminator models
