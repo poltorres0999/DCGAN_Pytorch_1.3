@@ -14,6 +14,7 @@ import torchvision.datasets as dataset_utils
 import torchvision.transforms as transforms
 import torchvision.utils as vutils
 from IPython.display import HTML
+from datetime import datetime
 
 from src.dcgan.utils import save_model
 
@@ -123,7 +124,7 @@ class DCGAN():
 
     # todo: Debug
     # todo: store images as png
-    def train(self, gen_save_path, disc_save_path, num_epochs=1, noise_v_size=100, real_label_v=1, fake_label_v=0, store_frequency=500,
+    def train(self, gen_save_path, disc_save_path, images_save_path ,num_epochs=1, noise_v_size=100, real_label_v=1, fake_label_v=0, store_frequency=500,
               debug=False):
         # Training Loop
         # Create batch of latent vectors that we will use to visualize the progression of the generator
@@ -168,9 +169,11 @@ class DCGAN():
                           f'D(x): {dr_o_x:.4f}\tD(G(z)): {dr_g_o_z1:.4f} / {dr_g_o_z2:.4f}')
 
                 # Check how the generator is doing by saving G's output on fixed_noise
-                if (store_frequency % 500 == 0) or ((epoch == num_epochs - 1) and (i == len(self.data_loader) - 1)):
+                if (store_frequency % 240 == 0) or ((epoch == num_epochs - 1) and (i == len(self.data_loader) - 1)):
                     with torch.no_grad():
                         fake_images = self.generator_net(fixed_noise).detach().cpu()
+                        fake_images_path = f"{images_save_path}/{datetime.now().strftime('%d-%m-%Y_%I-%M-%S_%p')}.png"
+                        vutils.save_image(fake_images, fake_images_path)
                     self.generated_images.append(vutils.make_grid(fake_images, padding=2, normalize=True))
 
                 iters += 1

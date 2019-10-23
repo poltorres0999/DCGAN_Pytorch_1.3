@@ -8,6 +8,7 @@ import torch.utils.data
 import torchvision.datasets as dataset_utils
 import torchvision.transforms as transforms
 from matplotlib import pyplot as plt
+from torchvision import utils as vutils
 
 
 def set_environment(seed_range, n_gpu):
@@ -79,7 +80,6 @@ def load_base_dataset(dataset_name, data_root, transform, batch_size, norm=1, sh
 
 
 def load_model(model, optimizer, save_path):
-
     checkpoint = torch.load(save_path)
     model.load_state_dict(checkpoint['model_state_dict'])
     optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
@@ -90,14 +90,14 @@ def load_model(model, optimizer, save_path):
 
 
 def save_model(model, optimizer, epoch, save_path):
-
     torch.save({
         'epoch': epoch,
         'model_state_dict': model.state_dict(),
         'optimizer_state_dict': optimizer.state_dict(),
     }, save_path)
 
-def plot_loss_resutls(gen_loss, disc_loss):
+
+def plot_loss_results(gen_loss, disc_loss):
     plt.figure(figsize=(10, 5))
     plt.title("Generator and Discriminator Loss During Training")
     plt.plot(gen_loss, label="G")
@@ -119,7 +119,15 @@ def save_loss_plot(gen_loss, disc_loss, path):
     plt.savefig(f"{path}/gen_disc_loss.png")
 
 
-def create_report(r_path, s_date, gen_net, disc_net, optimizer, loss_fn, dataset_name, lr, epochs, disc_loss, gen_loss):
+def generate_fake_images(generator, batch_size, noise_v_size, device, images_save_path, n_rows=8, padding=2, norm=True):
+    noise = torch.randn(batch_size, noise_v_size, 1, 1, device=device)
+    fake_images = generator(noise).detach().cpu()
+    fake_images_path = f"{images_save_path}/{datetime.now().strftime('%d-%m-%Y_%I-%M-%S_%p')}.png"
+    vutils.save_image(fake_images, fake_images_path, nrow=n_rows, normalize=norm, padding=padding)
+
+
+def create_report(r_path, s_date, gen_net, disc_net, optimizer, loss_fn, dataset_name, batch_size, image_size, lr,
+                  epochs, disc_loss, gen_loss):
     current_date = datetime.now().strftime("%d-%m-%Y_%I-%M-%S_%p")
     filename = r_path + f"{current_date}.txt"
 
@@ -136,6 +144,8 @@ def create_report(r_path, s_date, gen_net, disc_net, optimizer, loss_fn, dataset
         file.write(f"Loss Function:\t{loss_fn}\n")
         file.write("------------Dataset------------\n")
         file.write(f"Data set name:\t{dataset_name}\n")
+        file.write(f"Batch Size:\t{dataset_name}\n")
+        file.write(f"Image Size:\t{dataset_name}\n")
         file.write("------------Training------------\n")
         file.write(f"Learning rate:\t{lr}\n")
         file.write(f"Epochs:\t{epochs}\n")
