@@ -144,10 +144,9 @@ def main():
                   dataset_name=dataset_name, lr=lr, epochs=num_epochs, disc_loss=dc_gan.disc_loss[-1],
                   gen_loss=dc_gan.gen_loss[-1], batch_size=batch_size, image_size=image_size)
     # generate fake images with trained generator model
-    generated_images_path = f"{images_path}/generated_images_{datetime.now().strftime('%d-%m-%Y_%I-%M-%S_%p')}.png"
-    generate_fake_images(generator=dc_gan.generator_net,batch_size=batch_size, noise_v_size=noise_vector_size,
+    generated_images_path = f"{images_path}/{datetime.now().strftime('%d-%m-%Y_%I-%M-%S_%p')}.png"
+    generate_fake_images(generator=dc_gan.generator_net, batch_size=batch_size, noise_v_size=noise_vector_size,
                          device=device, images_save_path=generated_images_path)
-
 
 
 if __name__ == "__main__":

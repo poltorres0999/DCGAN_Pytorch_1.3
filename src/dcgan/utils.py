@@ -22,7 +22,7 @@ def set_environment(seed_range, n_gpu):
 
 def set_transform(img_size, img_depth, norm=0.5):
     transformations = [transforms.Resize(img_size),
-                       transforms.CenterCrop(img_size),
+                       # transforms.CenterCrop(img_size),
                        transforms.ToTensor()]
 
     if img_depth == 3:
@@ -122,7 +122,7 @@ def save_loss_plot(gen_loss, disc_loss, path):
 def generate_fake_images(generator, batch_size, noise_v_size, device, images_save_path, n_rows=8, padding=2, norm=True):
     noise = torch.randn(batch_size, noise_v_size, 1, 1, device=device)
     fake_images = generator(noise).detach().cpu()
-    fake_images_path = f"{images_save_path}/{datetime.now().strftime('%d-%m-%Y_%I-%M-%S_%p')}.png"
+    fake_images_path = f"{images_save_path}"
     vutils.save_image(fake_images, fake_images_path, nrow=n_rows, normalize=norm, padding=padding)
 
 
@@ -144,8 +144,8 @@ def create_report(r_path, s_date, gen_net, disc_net, optimizer, loss_fn, dataset
         file.write(f"Loss Function:\t{loss_fn}\n")
         file.write("------------Dataset------------\n")
         file.write(f"Data set name:\t{dataset_name}\n")
-        file.write(f"Batch Size:\t{dataset_name}\n")
-        file.write(f"Image Size:\t{dataset_name}\n")
+        file.write(f"Batch Size:\t{batch_size}\n")
+        file.write(f"Image Size:\t{image_size}\n")
         file.write("------------Training------------\n")
         file.write(f"Learning rate:\t{lr}\n")
         file.write(f"Epochs:\t{epochs}\n")
