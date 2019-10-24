@@ -18,7 +18,7 @@ def load_args():
     parser.add_argument('-d', '--enable_debug', action='store_true', help="Enable debug option")
     parser.add_argument('-plt', '--enable_plot', action='store_true', help="Plots will be shown during execution")
     parser.add_argument('-bds', '--base_data_set', help="The net will be trained with the specified "
-                                                        "ptyroch base dataset. ex: MNIST")
+                                                        "pytroch base dataset. ex: MNIST")
 
     return parser.parse_args()
 
@@ -79,6 +79,7 @@ def main():
     gen_temp_save_path = conf['training']['gen_save_path']
     disc_temp_save_path = conf['training']['disc_save_path']
     fake_images_path = conf['training']['generated_images_path']
+    get_sample_fr = int(conf['training']['get_sample_fr'])
     # Network conf
     noise_vector_size = int(conf['net']['noise_vector_size'])
     g_fm_depth = int(conf['net']['g_fm_depth'])
@@ -108,11 +109,11 @@ def main():
     if load_models:
         generator_net = Generator(n_gpu, noise_vector_size, fm_depth=g_fm_depth, img_nc=img_channels)
         gen_optimizer = optim.Adam(generator_net.parameters(), lr=lr, betas=(beta1, 0.999))
-        generator_net, gen_optimizer, num_epochs = load_model(generator_net, gen_optimizer, gen_model_path)
+        generator_net, gen_optimizer, num_epochs = load_model(generator_net, gen_optimizer, gen_temp_save_path)
 
         discriminator_net = Discriminator(n_gpu=n_gpu, fm_depth=d_fm_depth, img_nc=img_channels)
         disc_optimizer = optim.Adam(discriminator_net.parameters(), lr=lr, betas=(beta1, 0.999))
-        discriminator_net, disc_optimizer, num_epochs = load_model(discriminator_net, disc_optimizer, disc_model_path)
+        discriminator_net, disc_optimizer, num_epochs = load_model(discriminator_net, disc_optimizer, disc_temp_save_path)
 
     else:
         generator_net = Generator(n_gpu, noise_vector_size, fm_depth=g_fm_depth, img_nc=img_channels)
@@ -131,7 +132,7 @@ def main():
     start_date = datetime.now()
     dc_gan.train(num_epochs=num_epochs, noise_v_size=noise_vector_size,
                  disc_save_path=disc_temp_save_path, gen_save_path=gen_temp_save_path,
-                 images_save_path=fake_images_path)
+                 images_save_path=fake_images_path, store_frequency=get_sample_fr)
     # Plot training results
     plot_loss_results(dc_gan.gen_loss, dc_gan.disc_loss)
     save_loss_plot(dc_gan.gen_loss, dc_gan.disc_loss, results_path)
