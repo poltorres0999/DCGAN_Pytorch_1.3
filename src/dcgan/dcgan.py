@@ -125,7 +125,7 @@ class DCGAN():
     # todo: Debug
     # todo: store images as png
     def train(self, gen_save_path, disc_save_path, images_save_path ,num_epochs=1, noise_v_size=100, real_label_v=1, fake_label_v=0, store_frequency=50,
-              debug=False):
+              start_epoch = 0, debug=False):
         # Training Loop
         # Create batch of latent vectors that we will use to visualize the progression of the generator
         fixed_noise = torch.randn(64, noise_v_size, 1, 1, device=self.device)
@@ -133,7 +133,7 @@ class DCGAN():
         current_epoch = 0
         print("Starting Training Loop...")
         # For each epoch
-        for epoch in range(num_epochs):
+        for epoch in range(num_epochs - start_epoch):
             print(f"Started epoch [{epoch}] / [{num_epochs}]")
             # For each batch in the data_loader
             # Note -> enumerate outputs (int index, item from iterable object)
@@ -156,14 +156,13 @@ class DCGAN():
                                                                                 fake_labels)
                 # fake labels are real for generator cost (maximize log(D(G(z))))
                 gen_error, dr_g_o_z2 = self.optimize_generator_net(fake_data, real_labels)
-
                 # Save Losses for plotting later
                 self.disc_loss.append(disc_error)
                 self.gen_loss.append(gen_error)
-                print(self.disc_loss)
 
-                # Output training stats
                 if i % 50 == 0:
+
+                    # Output training stats
                     print(f'[{epoch}/{num_epochs}][{i}/{len(self.data_loader)}]\n'
                           f'Loss_D: {disc_error:.4f}\n'
                           f'Loss_G: {gen_error:.4f}\n'

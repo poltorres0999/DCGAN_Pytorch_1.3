@@ -22,7 +22,7 @@ def set_environment(seed_range, n_gpu):
 
 def set_transform(img_size, img_depth, norm=0.5):
     transformations = [transforms.Resize(img_size),
-                       # transforms.CenterCrop(img_size),
+                       transforms.CenterCrop(img_size),
                        transforms.ToTensor()]
 
     if img_depth == 3:
@@ -102,7 +102,7 @@ def plot_loss_results(gen_loss, disc_loss):
     plt.title("Generator and Discriminator Loss During Training")
     plt.plot(gen_loss, label="G")
     plt.plot(disc_loss, label="D")
-    plt.xlabel("iterations")
+    plt.xlabel("Iterations (every 50)")
     plt.ylabel("Loss")
     plt.legend()
     plt.show()

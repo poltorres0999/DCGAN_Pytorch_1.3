@@ -80,6 +80,7 @@ def main():
     disc_temp_save_path = conf['training']['disc_save_path']
     fake_images_path = conf['training']['generated_images_path']
     get_sample_fr = int(conf['training']['get_sample_fr'])
+    start_epoch = 0
     # Network conf
     noise_vector_size = int(conf['net']['noise_vector_size'])
     g_fm_depth = int(conf['net']['g_fm_depth'])
@@ -109,11 +110,11 @@ def main():
     if load_models:
         generator_net = Generator(n_gpu, noise_vector_size, fm_depth=g_fm_depth, img_nc=img_channels)
         gen_optimizer = optim.Adam(generator_net.parameters(), lr=lr, betas=(beta1, 0.999))
-        generator_net, gen_optimizer, num_epochs = load_model(generator_net, gen_optimizer, gen_temp_save_path)
+        generator_net, gen_optimizer, start_epoch = load_model(generator_net, gen_optimizer, gen_temp_save_path)
 
         discriminator_net = Discriminator(n_gpu=n_gpu, fm_depth=d_fm_depth, img_nc=img_channels)
         disc_optimizer = optim.Adam(discriminator_net.parameters(), lr=lr, betas=(beta1, 0.999))
-        discriminator_net, disc_optimizer, num_epochs = load_model(discriminator_net, disc_optimizer, disc_temp_save_path)
+        discriminator_net, disc_optimizer, start_epoch = load_model(discriminator_net, disc_optimizer, disc_temp_save_path)
 
     else:
         generator_net = Generator(n_gpu, noise_vector_size, fm_depth=g_fm_depth, img_nc=img_channels)
@@ -130,7 +131,7 @@ def main():
     dc_gan.set_optimizers(disc_optimizer, gen_optimizer)
     # Start training loop
     start_date = datetime.now()
-    dc_gan.train(num_epochs=num_epochs, noise_v_size=noise_vector_size,
+    dc_gan.train(start_epoch=start_epoch, num_epochs=num_epochs, noise_v_size=noise_vector_size,
                  disc_save_path=disc_temp_save_path, gen_save_path=gen_temp_save_path,
                  images_save_path=fake_images_path, store_frequency=get_sample_fr)
     # Plot training results
