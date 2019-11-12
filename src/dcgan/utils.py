@@ -11,6 +11,9 @@ import torchvision.transforms as transforms
 from matplotlib import pyplot as plt
 from torchvision import utils as vutils
 
+from src.dcgan.discriminator import *
+from src.dcgan.generator import *
+
 
 def set_environment(seed_range, n_gpu):
     # Set random seed for reproducibility
@@ -62,6 +65,22 @@ def load_image_data(data_root, transform, batch_size, norm=1, shuffle=False, dat
                                               num_workers=data_loader_workers)
 
     return data_loader
+
+
+def create_GAN_model(model_name, n_gpu, noise_vector_size, fm_depth, img_nc):
+    generator = ""
+    discriminator = ""
+    if model_name == "baseGAN":
+        generator = Generator(n_gpu, noise_vector_size, fm_depth, img_nc)
+        discriminator = Discriminator(n_gpu, fm_depth, img_nc)
+    if model_name =="SevGAN":
+        generator = SevGenerator(n_gpu, noise_vector_size, fm_depth, img_nc)
+        discriminator = SevDiscriminator(n_gpu, fm_depth, img_nc)
+    if model_name =="SixGAN":
+        generator = SixGenerator(n_gpu, noise_vector_size, fm_depth, img_nc)
+        discriminator = SixDiscriminator(n_gpu, fm_depth, img_nc)
+
+    return generator, discriminator
 
 
 def load_base_dataset(dataset_name, data_root, transform, batch_size, norm=1, shuffle=False, data_loader_workers=0):

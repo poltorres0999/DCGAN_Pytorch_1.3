@@ -2,8 +2,6 @@ import argparse
 import configparser
 
 from src.dcgan.dcgan import *
-from src.dcgan.discriminator import Discriminator
-from src.dcgan.generator import Generator
 from src.dcgan.utils import *
 from datetime import datetime
 
@@ -82,16 +80,12 @@ def main():
     get_sample_fr = int(conf['training']['get_sample_fr'])
     start_epoch = 0
     # Network conf
+    model_name = conf['net']['model']
     noise_vector_size = int(conf['net']['noise_vector_size'])
-    g_fm_depth = int(conf['net']['g_fm_depth'])
-    d_fm_depth = int(conf['net']['d_fm_depth'])
+    fm_depth = int(conf['net']['fm_depth'])
     # results
     results_path = conf['results']['results_path']
-    images_path = conf['results']['images_path']
-    gen_model_path = conf['results']['gen_model_path']
-    disc_model_path = conf['results']['disc_model_path']
 
-    dataset_name = ""
     # Sets the device (GPU or CPU) and creates the data_loader
     device = set_environment((seed_min, seed_max), n_gpu)
     # Set image transformations
@@ -106,26 +100,19 @@ def main():
                                       norm=norm, shuffle=shuffle, data_loader_workers=dl_workers)
         dataset_name = data_set_path.split("/")[-1]
 
+    # Select GAN model
+    generator, discriminator = create_GAN_model(model_name, n_gpu, noise_vector_size, fm_depth, img_channels)
+    gen_optimizer = optim.Adam(generator.parameters(), lr=lr, betas=(beta1, 0.999))
+    disc_optimizer = optim.Adam(discriminator.parameters(), lr=lr, betas=(beta1, 0.999))
     # Create or load Generator and Discriminator models
     if load_models:
-        generator_net = Generator(n_gpu, noise_vector_size, fm_depth=g_fm_depth, img_nc=img_channels)
-        gen_optimizer = optim.Adam(generator_net.parameters(), lr=lr, betas=(beta1, 0.999))
-        generator_net, gen_optimizer, start_epoch = load_model(generator_net, gen_optimizer, gen_temp_save_path)
-
-        discriminator_net = Discriminator(n_gpu=n_gpu, fm_depth=d_fm_depth, img_nc=img_channels)
-        disc_optimizer = optim.Adam(discriminator_net.parameters(), lr=lr, betas=(beta1, 0.999))
-        discriminator_net, disc_optimizer, start_epoch = load_model(discriminator_net, disc_optimizer, disc_temp_save_path)
-
-    else:
-        generator_net = Generator(n_gpu, noise_vector_size, fm_depth=g_fm_depth, img_nc=img_channels)
-        gen_optimizer = optim.Adam(generator_net.parameters(), lr=lr, betas=(beta1, 0.999))
-        discriminator_net = Discriminator(n_gpu=n_gpu, fm_depth=d_fm_depth, img_nc=img_channels)
-        disc_optimizer = optim.Adam(discriminator_net.parameters(), lr=lr, betas=(beta1, 0.999))
+        generator, gen_optimizer, start_epoch = load_model(generator, gen_optimizer, gen_temp_save_path)
+        discriminator, disc_optimizer, start_epoch = load_model(discriminator, disc_optimizer, disc_temp_save_path)
 
     # Create loss function (Just BCE for now)
     loss_fn = nn.BCELoss()
-    # Create DCGAN
-    dc_gan = DCGAN(generator=generator_net, discriminator=discriminator_net, data_loader=data_loader, device=device)
+    # Create DC_GAN
+    dc_gan = DCGAN(generator=generator, discriminator=discriminator, data_loader=data_loader, device=device)
     # Set loss function(BCE) and both model optimizers
     dc_gan.set_loss_fn(loss_fn)
     dc_gan.set_optimizers(disc_optimizer, gen_optimizer)
