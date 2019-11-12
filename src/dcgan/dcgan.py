@@ -18,7 +18,7 @@ from datetime import datetime
 
 from src.dcgan.utils import save_model
 
-DEFAULT_CONFIG_PATH = "../../res/default_config.ini"
+DEFAULT_CONFIG_PATH = "../../config/default_config.ini"
 
 
 class DCGAN():

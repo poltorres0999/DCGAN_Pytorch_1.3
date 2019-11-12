@@ -7,7 +7,7 @@ from src.dcgan.generator import Generator
 from src.dcgan.utils import *
 from datetime import datetime
 
-DEFAULT_CONFIG_PATH = "../../res/default_config.ini"
+DEFAULT_CONFIG_PATH = "../../config/default_config.ini"
 
 
 def load_args():
