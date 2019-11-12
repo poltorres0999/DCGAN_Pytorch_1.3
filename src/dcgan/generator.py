@@ -21,12 +21,12 @@ class Generator(nn.Module):
             nn.BatchNorm2d(self.fm_depth * 4),
             nn.ReLU(True),
             # state size. (fm_depth*4) x 8 x 8
-            # output depth -> 64 *  8 = 256
+            # output depth -> 64 *  4 = 256
             nn.ConvTranspose2d(self.fm_depth * 4, self.fm_depth * 2, 4, 2, 1, bias=False),
             nn.BatchNorm2d(self.fm_depth * 2),
             nn.ReLU(True),
             # state size. (fm_depth*2) x 16 x 16
-            # output depth -> 64 *  8 = 128
+            # output depth -> 64 *  2 = 128
             nn.ConvTranspose2d(self.fm_depth * 2, self.fm_depth, 4, 2, 1, bias=False),
             nn.BatchNorm2d(self.fm_depth),
             nn.ReLU(True),

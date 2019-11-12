@@ -161,7 +161,6 @@ class DCGAN():
                 self.gen_loss.append(gen_error)
 
                 if i % 50 == 0:
-
                     # Output training stats
                     print(f'[{epoch}/{num_epochs}][{i}/{len(self.data_loader)}]\n'
                           f'Loss_D: {disc_error:.4f}\n'
@@ -173,7 +172,7 @@ class DCGAN():
                     with torch.no_grad():
                         fake_images = self.generator_net(fixed_noise).detach().cpu()
                         fake_images_path = f"{images_save_path}/{datetime.now().strftime('%d-%m-%Y_%I-%M-%S_%p')}_epoch_{epoch}_iter_{i}.png"
-                        vutils.save_image(fake_images, fake_images_path)
+                        vutils.save_image(fake_images[25], fake_images_path)
                     self.generated_images.append(vutils.make_grid(fake_images, padding=2, normalize=True))
 
                 iters += 1

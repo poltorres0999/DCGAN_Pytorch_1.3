@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import random
+import os
 from datetime import datetime
 import torch
 import torch.nn.parallel
@@ -122,8 +123,9 @@ def save_loss_plot(gen_loss, disc_loss, path):
 def generate_fake_images(generator, batch_size, noise_v_size, device, images_save_path, n_rows=8, padding=2, norm=True):
     noise = torch.randn(batch_size, noise_v_size, 1, 1, device=device)
     fake_images = generator(noise).detach().cpu()
-    fake_images_path = f"{images_save_path}"
-    vutils.save_image(fake_images, fake_images_path, nrow=n_rows, normalize=norm, padding=padding)
+    for i in noise:
+        img_path = f"{images_save_path}/{datetime.now().strftime('%d-%m-%Y_%I-%M-%S_%p')}"
+        vutils.save_image(i, img_path, nrow=n_rows, normalize=norm, padding=padding)
 
 
 def create_report(r_path, s_date, gen_net, disc_net, optimizer, loss_fn, dataset_name, batch_size, image_size, lr,
@@ -152,3 +154,27 @@ def create_report(r_path, s_date, gen_net, disc_net, optimizer, loss_fn, dataset
         file.write("------------Results------------\n")
         file.write(f"Generator loss:\t{gen_loss}\n")
         file.write(f"Discriminator loss:\t{disc_loss}\n")
+
+
+def create_result_directories(results_folder):
+    # Check if results folder path exists, if not create new directory
+    if not os.path.exists(results_folder):
+        os.makedirs(results_folder)
+    # Create experiment results folder
+    experiment_folder = f"{results_folder}/{datetime.now().strftime('%d-%m-%Y_%I-%M-%S_%p')}"
+    os.mkdir(experiment_folder)
+    report_path = f"{experiment_folder}/report"
+    models_path = f"{experiment_folder}/models"
+    generated_images_path = f"{experiment_folder}/generated_images"
+    plot_path = f"{experiment_folder}/plot"
+    # Create nested folder (model, report, generated_images, plot)
+    os.mkdir(report_path)
+    os.mkdir(models_path)
+    os.mkdir(generated_images_path)
+    os.mkdir(plot_path)
+
+    return report_path, models_path, generated_images_path, plot_path
+
+
+
+

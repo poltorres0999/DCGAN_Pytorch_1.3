@@ -133,20 +133,21 @@ def main():
     start_date = datetime.now()
     dc_gan.train(start_epoch=start_epoch, num_epochs=num_epochs, noise_v_size=noise_vector_size,
                  disc_save_path=disc_temp_save_path, gen_save_path=gen_temp_save_path,
-                 images_save_path=fake_images_path, store_frequency=get_sample_fr)
+                 images_save_path=fake_images_path, store_frequency=1)
+    # Create results directories
+    report_path, models_path, generated_images_path, plot_path = create_result_directories(results_path)
     # Plot training results
     plot_loss_results(dc_gan.gen_loss, dc_gan.disc_loss)
-    save_loss_plot(dc_gan.gen_loss, dc_gan.disc_loss, results_path)
+    save_loss_plot(dc_gan.gen_loss, dc_gan.disc_loss, plot_path)
     # Save models
-    torch.save(dc_gan.generator_net.state_dict(), gen_model_path)
-    torch.save(dc_gan.discriminator_net.state_dict(), disc_model_path)
+    torch.save(dc_gan.generator_net.state_dict(), f"{models_path}/generator.pt")
+    torch.save(dc_gan.discriminator_net.state_dict(), f"{models_path}/discriminator.pt")
     # Create report
-    create_report(r_path=results_path, s_date=start_date, gen_net=dc_gan.generator_net,
+    create_report(r_path=report_path, s_date=start_date, gen_net=dc_gan.generator_net,
                   disc_net=dc_gan.discriminator_net, optimizer="Adam", loss_fn=dc_gan.loss_fn,
                   dataset_name=dataset_name, lr=lr, epochs=num_epochs, disc_loss=dc_gan.disc_loss[-1],
                   gen_loss=dc_gan.gen_loss[-1], batch_size=batch_size, image_size=image_size)
     # generate fake images with trained generator model
-    generated_images_path = f"{images_path}/{datetime.now().strftime('%d-%m-%Y_%I-%M-%S_%p')}.png"
     generate_fake_images(generator=dc_gan.generator_net, batch_size=batch_size, noise_v_size=noise_vector_size,
                          device=device, images_save_path=generated_images_path)
 
