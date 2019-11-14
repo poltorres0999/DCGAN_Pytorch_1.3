@@ -122,7 +122,7 @@ def main():
                  disc_save_path=disc_temp_save_path, gen_save_path=gen_temp_save_path,
                  images_save_path=fake_images_path, store_frequency=1)
     # Create results directories
-    report_path, models_path, generated_images_path, plot_path = create_result_directories(results_path)
+    report_path, models_path, generated_images_path, plot_path = create_result_directories(results_path, model_name)
     # Plot training results
     plot_loss_results(dc_gan.gen_loss, dc_gan.disc_loss)
     save_loss_plot(dc_gan.gen_loss, dc_gan.disc_loss, plot_path)

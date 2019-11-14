@@ -122,7 +122,7 @@ def plot_loss_results(gen_loss, disc_loss):
     plt.title("Generator and Discriminator Loss During Training")
     plt.plot(gen_loss, label="G")
     plt.plot(disc_loss, label="D")
-    plt.xlabel("Iterations (every 50)")
+    plt.xlabel("Iterations")
     plt.ylabel("Loss")
     plt.legend()
     plt.show()
@@ -142,15 +142,17 @@ def save_loss_plot(gen_loss, disc_loss, path):
 def generate_fake_images(generator, batch_size, noise_v_size, device, images_save_path, n_rows=8, padding=2, norm=True):
     noise = torch.randn(batch_size, noise_v_size, 1, 1, device=device)
     fake_images = generator(noise).detach().cpu()
-    for i in noise:
-        img_path = f"{images_save_path}/{datetime.now().strftime('%d-%m-%Y_%I-%M-%S_%p')}"
-        vutils.save_image(i, img_path, nrow=n_rows, normalize=norm, padding=padding)
+    count = 0
+    for i in fake_images:
+        img_path = f"{images_save_path}/{count}.png"
+        vutils.save_image(i, img_path)
+        count += 1
 
 
 def create_report(r_path, s_date, gen_net, disc_net, optimizer, loss_fn, dataset_name, batch_size, image_size, lr,
                   epochs, disc_loss, gen_loss):
     current_date = datetime.now().strftime("%d-%m-%Y_%I-%M-%S_%p")
-    filename = r_path + f"{current_date}.txt"
+    filename = f"{r_path}/{current_date}.txt"
 
     with open(filename, 'w') as file:
         file.write(f"Start date:\t{s_date.strftime('%d-%m-%Y_%I-%M-%S_%p')}\n")
@@ -175,12 +177,12 @@ def create_report(r_path, s_date, gen_net, disc_net, optimizer, loss_fn, dataset
         file.write(f"Discriminator loss:\t{disc_loss}\n")
 
 
-def create_result_directories(results_folder):
+def create_result_directories(results_folder, model_name):
     # Check if results folder path exists, if not create new directory
     if not os.path.exists(results_folder):
         os.makedirs(results_folder)
     # Create experiment results folder
-    experiment_folder = f"{results_folder}/{datetime.now().strftime('%d-%m-%Y_%I-%M-%S_%p')}"
+    experiment_folder = f"{results_folder}/{model_name}_{datetime.now().strftime('%d-%m-%Y_%I-%M-%S_%p')}"
     os.mkdir(experiment_folder)
     report_path = f"{experiment_folder}/report"
     models_path = f"{experiment_folder}/models"

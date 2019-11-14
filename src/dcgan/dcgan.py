@@ -121,9 +121,8 @@ class DCGAN():
         return gen_error, D_G_z2
 
     # todo: Debug
-    # todo: store images as png
-    def train(self, gen_save_path, disc_save_path, images_save_path ,num_epochs=1, noise_v_size=100, real_label_v=1, fake_label_v=0, store_frequency=50,
-              start_epoch = 0, debug=False):
+    def train(self, gen_save_path, disc_save_path, images_save_path, num_epochs=1, noise_v_size=100, real_label_v=1,
+              fake_label_v=0, store_frequency=50, start_epoch=0, debug=False):
         # Training Loop
         # Create batch of latent vectors that we will use to visualize the progression of the generator
         fixed_noise = torch.randn(64, noise_v_size, 1, 1, device=self.device)
@@ -170,7 +169,7 @@ class DCGAN():
                     with torch.no_grad():
                         fake_images = self.generator_net(fixed_noise).detach().cpu()
                         fake_images_path = f"{images_save_path}/{datetime.now().strftime('%d-%m-%Y_%I-%M-%S_%p')}_epoch_{epoch}_iter_{i}.png"
-                        vutils.save_image(fake_images[25], fake_images_path)
+                        vutils.save_image(fake_images[0], fake_images_path)
                     self.generated_images.append(vutils.make_grid(fake_images, padding=2, normalize=True))
 
                 iters += 1
