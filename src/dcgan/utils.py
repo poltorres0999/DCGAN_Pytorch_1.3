@@ -11,8 +11,8 @@ import torchvision.transforms as transforms
 from matplotlib import pyplot as plt
 from torchvision import utils as vutils
 
-from src.dcgan.discriminator import *
-from src.dcgan.generator import *
+from discriminator import *
+from generator import *
 
 
 def set_environment(seed_range, n_gpu):

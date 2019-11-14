@@ -10,13 +10,11 @@ import torch.nn as nn
 import torch.nn.parallel
 import torch.optim as optim
 import torch.utils.data
-import torchvision.datasets as dataset_utils
-import torchvision.transforms as transforms
 import torchvision.utils as vutils
 from IPython.display import HTML
 from datetime import datetime
 
-from src.dcgan.utils import save_model
+from utils import save_model
 
 DEFAULT_CONFIG_PATH = "../../config/default_config.ini"
 

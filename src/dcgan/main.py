@@ -1,8 +1,8 @@
 import argparse
 import configparser
 
-from src.dcgan.dcgan import *
-from src.dcgan.utils import *
+from dcgan import *
+from utils import *
 from datetime import datetime
 
 DEFAULT_CONFIG_PATH = "../../config/default_config.ini"
