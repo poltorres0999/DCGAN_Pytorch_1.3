@@ -98,15 +98,12 @@ def load_base_dataset(dataset_name, data_root, transform, batch_size, norm=1, sh
 
     return data_loader
 
-
 def load_model(model, optimizer, save_path):
-    checkpoint = torch.load(save_path)
-    model.load_state_dict(checkpoint['model_state_dict'])
-    optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-    epoch = checkpoint['epoch']
+    model = model
+    model.load_state_dict(torch.load(save_path))
     model.eval()
 
-    return model, optimizer, epoch
+    return model, optimizer
 
 
 def save_model(model, optimizer, epoch, save_path):
@@ -148,6 +145,16 @@ def generate_fake_images(generator, batch_size, noise_v_size, device, images_sav
         vutils.save_image(i, img_path)
         count += 1
 
+
+def generate_images_from_single_noise(generator, noise_v_size, device, images_save_path, n_samples=100, n_rows=8, padding=2, norm=True, alpha=0.1):
+    noise = torch.randn(1, noise_v_size, 1, 1, device=device)
+    count = 0
+    for i in range(n_samples):
+        fake_image = generator(noise).detach().cpu()
+        noise += alpha
+        img_path = f"{images_save_path}/{count}.png"
+        vutils.save_image(fake_image, img_path)
+        count += 1
 
 def create_report(r_path, s_date, gen_net, disc_net, optimizer, loss_fn, dataset_name, batch_size, image_size, lr,
                   epochs, disc_loss, gen_loss):

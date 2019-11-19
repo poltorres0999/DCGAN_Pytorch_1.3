@@ -125,7 +125,7 @@ def main():
     report_path, models_path, generated_images_path, plot_path = create_result_directories(results_path, model_name)
     # Plot training results
     plot_loss_results(dc_gan.gen_loss, dc_gan.disc_loss)
-    save_loss_plot(dc_gan.gen_loss, dc_gan.disc_loss, plot_path)
+    #save_loss_plot(dc_gan.gen_loss, dc_gan.disc_loss, plot_path)
     # Save models
     torch.save(dc_gan.generator_net.state_dict(), f"{models_path}/generator.pt")
     torch.save(dc_gan.discriminator_net.state_dict(), f"{models_path}/discriminator.pt")
@@ -135,8 +135,8 @@ def main():
                   dataset_name=dataset_name, lr=lr, epochs=num_epochs, disc_loss=dc_gan.disc_loss[-1],
                   gen_loss=dc_gan.gen_loss[-1], batch_size=batch_size, image_size=image_size)
     # generate fake images with trained generator model
-    generate_fake_images(generator=dc_gan.generator_net, batch_size=batch_size, noise_v_size=noise_vector_size,
-                         device=device, images_save_path=generated_images_path)
+    # generate_fake_images(generator=dc_gan.generator_net, batch_size=batch_size, noise_v_size=noise_vector_size,
+    #                     device=device, images_save_path=generated_images_path)
 
 
 if __name__ == "__main__":
