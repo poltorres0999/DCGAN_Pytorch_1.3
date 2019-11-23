@@ -130,6 +130,8 @@ class DCGAN():
         current_epoch = 0
         print("Starting Training Loop...")
         # For each epoch
+        self.generator_net.cuda()
+        self.discriminator_net.cuda()
         for epoch in range(num_epochs - start_epoch):
             print(f"Started epoch [{epoch}] / [{num_epochs}]")
             # For each batch in the data_loader
@@ -170,7 +172,6 @@ class DCGAN():
                         fake_images = self.generator_net(fixed_noise).detach().cpu()
                         fake_images_path = f"{images_save_path}/{datetime.now().strftime('%d-%m-%Y_%I-%M-%S_%p')}_epoch_{epoch}_iter_{i}.png"
                         vutils.save_image(fake_images[0], fake_images_path)
-                    self.generated_images.append(vutils.make_grid(fake_images, padding=2, normalize=True))
 
                 iters += 1
 

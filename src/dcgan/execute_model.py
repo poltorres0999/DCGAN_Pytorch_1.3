@@ -3,13 +3,13 @@ from torch import optim
 from torchvision import utils as vutils
 from src.dcgan.utils import create_GAN_model, load_model, generate_fake_images, generate_images_from_single_noise
 
-model_path = "../../results/CASIA_results/baseGAN_15-11-2019_03-02-09_AM/models/generator.pt"
-store_path = "C:/Users/polto/Desktop/CASIA_video_images/0.0001"
-model_name = "baseGAN"
+model_path = "../../results/CASIA_results/SmallKernel_23-11-2019_07-31-52_PM/models/generator.pt"
+store_path = "C:/Users/polto/Desktop/SmallKernelImages"
+model_name = "SmallKernel"
 img_channels = 3
 n_gpu = 1
 noise_vector_size = 100
-fm_depth = 64
+fm_depth = 163
 lr = 0.0002
 beta1=0.5
 device = torch.device("cuda:0" if (torch.cuda.is_available() and n_gpu > 0) else "cpu")
@@ -18,31 +18,13 @@ n_samples = 2000
 generator, discriminator = create_GAN_model(model_name, n_gpu, noise_vector_size, fm_depth, img_channels)
 gen_optimizer = optim.Adam(generator.parameters(), lr=lr, betas=(beta1, 0.999))
 model = load_model(generator, gen_optimizer, model_path)
-# generate_fake_images(batch_size=128, noise_v_size=noise_vector_size, generator=generator, device=device, images_save_path=store_path)
+generator.cuda()
+generate_fake_images(batch_size=128, noise_v_size=noise_vector_size, generator=generator, device=device, images_save_path=store_path)
 
+"""
 generate_images_from_single_noise(generator=generator, device=device, images_save_path=store_path,
                                  noise_v_size=noise_vector_size, n_samples=n_samples, alpha=alpha)
-
-
 """
-noise = torch.randn(1, 100, 1, 1, device=device)
-print(noise)
-first_image = generator(noise).detach().cpu()
-noise_copy = noise
-sum_vector = noise = torch.randn(1, 100, 1, 1, device=device) + 20
-for i in range(n_samples):
-    noise += alpha
 
-last_image = generator(noise).detach().cpu()
 
-noise_copy += (alpha * n_samples)
-noise_copy_image = generator(noise_copy).detach().cpu()
-sum_image = generator(sum_vector).detach().cpu()
-
-vutils.save_image(first_image, f"{store_path}/first_image.png")
-vutils.save_image(last_image, f"{store_path}/last_image.png")
-vutils.save_image(noise_copy_image, f"{store_path}/copy_image.png")
-vutils.save_image(sum_image, f"{store_path}/sum_vector.png")
-
-"""
 

@@ -73,12 +73,22 @@ def create_GAN_model(model_name, n_gpu, noise_vector_size, fm_depth, img_nc):
     if model_name == "baseGAN":
         generator = Generator(n_gpu, noise_vector_size, fm_depth, img_nc)
         discriminator = Discriminator(n_gpu, fm_depth, img_nc)
-    if model_name =="SevGAN":
+    if model_name == "SevGAN":
         generator = SevGenerator(n_gpu, noise_vector_size, fm_depth, img_nc)
         discriminator = SevDiscriminator(n_gpu, fm_depth, img_nc)
-    if model_name =="SixGAN":
+    if model_name == "SixGAN":
         generator = SixGenerator(n_gpu, noise_vector_size, fm_depth, img_nc)
         discriminator = SixDiscriminator(n_gpu, fm_depth, img_nc)
+    if model_name == "SmallKernel":
+        generator = SmallKernelGenerator(n_gpu, noise_vector_size, fm_depth, img_nc)
+        discriminator = SmallKernelDiscriminator(n_gpu, fm_depth, img_nc)
+    if model_name == "SmallKernelSix":
+        generator = SmallKernelSixGenerator(n_gpu, noise_vector_size, fm_depth, img_nc)
+        discriminator = SmallKernelSixDiscriminator(n_gpu, fm_depth, img_nc)
+    if model_name == "FiveKernel":
+        generator = FiveKernelGenerator(n_gpu, noise_vector_size, fm_depth, img_nc)
+        discriminator = FiveKernelDiscriminator(n_gpu, fm_depth, img_nc)
+
 
     return generator, discriminator
 

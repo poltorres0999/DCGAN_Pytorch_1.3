@@ -120,7 +120,7 @@ def main():
     start_date = datetime.now()
     dc_gan.train(start_epoch=start_epoch, num_epochs=num_epochs, noise_v_size=noise_vector_size,
                  disc_save_path=disc_temp_save_path, gen_save_path=gen_temp_save_path,
-                 images_save_path=fake_images_path, store_frequency=1)
+                 images_save_path=fake_images_path, store_frequency=get_sample_fr)
     # Create results directories
     report_path, models_path, generated_images_path, plot_path = create_result_directories(results_path, model_name)
     # Plot training results
