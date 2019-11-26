@@ -88,7 +88,9 @@ def create_GAN_model(model_name, n_gpu, noise_vector_size, fm_depth, img_nc):
     if model_name == "FiveKernel":
         generator = FiveKernelGenerator(n_gpu, noise_vector_size, fm_depth, img_nc)
         discriminator = FiveKernelDiscriminator(n_gpu, fm_depth, img_nc)
-
+    if model_name == "FiveKernelSixLayer":
+        generator = FiveKernelSixLayerGenerator(n_gpu, noise_vector_size, fm_depth, img_nc)
+        discriminator = FiveKernelSixLayerDiscriminator(n_gpu, fm_depth, img_nc)
 
     return generator, discriminator
 
